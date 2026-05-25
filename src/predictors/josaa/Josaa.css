@@ -1,0 +1,25 @@
+.predictor-module {
+  max-width: 100%;
+}
+
+.module-header {
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.module-header h2 {
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.module-header p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .module-header h2 {
+    font-size: 1.5rem;
+  }
+}

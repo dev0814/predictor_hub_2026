@@ -1,0 +1,62 @@
+.predictor-module {
+  max-width: 100%;
+  animation: fadeIn 0.5s ease;
+}
+
+.module-header {
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.module-header h2 {
+  font-size: 2.2rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.module-header p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+.results-actions-top {
+  margin-bottom: 20px;
+}
+
+.back-btn {
+  background: transparent;
+  border: none;
+  color: #3498db;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 5px 0;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s;
+}
+
+.back-btn:hover {
+  color: #2980b9;
+  text-decoration: underline;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  font-size: 1.2rem;
+  color: #7f8c8d;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .module-header h2 {
+    font-size: 1.8rem;
+  }
+}
