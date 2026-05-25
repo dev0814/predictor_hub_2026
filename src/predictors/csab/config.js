@@ -1,6 +1,6 @@
 export const CSAB_CONFIG = {
   title: 'CSAB 2025 College Predictor',
-  datasetPath: '/data/csab/2025.xlsx',
+  datasetPath: '/data/csab/2026.xlsx',
   primaryFilters: [
     { key: 'Username', label: 'Your Name', type: 'text', required: true },
     { key: 'Closing Rank', label: 'Your JEE Main Rank', type: 'number', required: true },
