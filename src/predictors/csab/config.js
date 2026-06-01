@@ -1,5 +1,5 @@
 export const CSAB_CONFIG = {
-  title: 'CSAB 2025 College Predictor',
+  title: 'CSAB 2026 College Predictor',
   datasetPath: '/data/csab/2026.xlsx',
   primaryFilters: [
     { key: 'Username', label: 'Your Name', type: 'text', required: true },

@@ -156,11 +156,20 @@ const GenericPredictor = ({ config }) => {
   };
 
   const handleDownload = () => {
+    // Extract details for the dynamic filename
+    const predictorName = config.title.split(' ').slice(0, 2).join('_'); // e.g., "JoSAA_2025"
+    const candidateName = (primaryFilters.Username || 'Candidate').replace(/\s+/g, '_');
+    const jeeRank = primaryFilters['Closing Rank'] || '0';
+    const seatType = (primaryFilters['Seat Type'] || primaryFilters['Category'] || 'General').replace(/\s+/g, '_');
+    const state = (primaryFilters['Institute State'] || primaryFilters['Home State'] || primaryFilters['Quota'] || 'AI').replace(/\s+/g, '_');
+
+    const fileName = `CareerSync_${predictorName}_${candidateName}_${jeeRank}_${seatType}_${state}.pdf`;
+
     generatePDF(
       config.title,
       config.columns,
       finalResults,
-      `${config.title.toLowerCase().replace(/\s+/g, '_')}_predictions.pdf`,
+      fileName,
       primaryFilters
     );
   };

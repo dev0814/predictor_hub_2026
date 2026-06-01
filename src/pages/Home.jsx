@@ -46,8 +46,8 @@ const Home = () => {
   return (
     <div className="home-container">
       <header className="hero-section">
-        <h1>Predictor Hub 2025</h1>
-        <p>Unified platform for all engineering college counseling predictions using official 2025 datasets.</p>
+        <h1>Predictor Hub 2026</h1>
+        <p>Unified platform for all engineering college counseling predictions using official 2026 datasets.</p>
       </header>
 
       <div className="predictor-grid">
