@@ -58,11 +58,14 @@ export const generatePDF = async (title, columns, data, fileName = 'prediction_r
   }
   
   const labelMap = {
-    'Closing Rank': 'JEE Mains Rank'
+    'Closing Rank': 'JEE Mains Rank',
+    'Round': 'Round'
   };
 
+  const allowedHeaderKeys = ['Closing Rank', 'Round'];
+
   const filterInfo = Object.entries(primaryFilters)
-    .filter(([key]) => key !== 'Username')
+    .filter(([key]) => allowedHeaderKeys.includes(key))
     .map(([key, value]) => `${labelMap[key] || key}: ${value}`)
     .join(' | ');
     
@@ -74,8 +77,12 @@ export const generatePDF = async (title, columns, data, fileName = 'prediction_r
   // Prepare data for autotable
   const sanitize = (val) => String(val || '').replace(/₹/g, 'Rs.');
 
-  const tableRows = data.map(item => columns.map(col => sanitize(item[col.key])));
-  const tableHeaders = [columns.map(col => col.label)];
+  // Exclude specific columns from PDF
+  const excludedColumns = ['Category', 'Seat Type', 'Gender', 'Quota'];
+  const filteredColumns = columns.filter(col => !excludedColumns.includes(col.label) && !excludedColumns.includes(col.key));
+
+  const tableRows = data.map(item => filteredColumns.map(col => sanitize(item[col.key])));
+  const tableHeaders = [filteredColumns.map(col => col.label)];
   
   autoTable(doc, {
     startY: yPos + 10,

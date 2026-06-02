@@ -1,6 +1,6 @@
 export const WBJEE_CONFIG = {
-  title: 'WBJEE 2025 College Predictor',
-  datasetPath: '/data/wbjee/2025.xlsx',
+  id: 'wbjee',
+  title: 'WBJEE College Predictor',
   primaryFilters: [
     { key: 'Username', label: 'Your Name', type: 'text', required: true },
     { key: 'Closing Rank', label: 'Your WBJEE Rank', type: 'number', required: true },

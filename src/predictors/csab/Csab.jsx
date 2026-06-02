@@ -3,8 +3,8 @@ import GenericPredictor from '../shared/GenericPredictor';
 import { CSAB_CONFIG } from './config';
 import './Csab.css';
 
-const Csab = () => {
-  return <GenericPredictor config={CSAB_CONFIG} />;
+const Csab = ({ year }) => {
+  return <GenericPredictor config={CSAB_CONFIG} year={year} />;
 };
 
 export default Csab;

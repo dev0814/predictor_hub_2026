@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { readExcelFile, getUniqueValues } from '../../utils/excelParser';
 import { generatePDF } from '../../utils/pdfGenerator';
 import InitialForm from '../../components/InitialForm';
@@ -6,7 +6,8 @@ import FilterSection from '../../components/FilterSection';
 import ResultTable from '../../components/ResultTable';
 import './GenericPredictor.css';
 
-const GenericPredictor = ({ config }) => {
+const GenericPredictor = ({ config, year }) => {
+  const resultsRef = useRef(null);
   const [rawData, setRawData] = useState([]);
   const [predictedResults, setPredictedResults] = useState([]);
   const [finalResults, setFinalResults] = useState([]);
@@ -21,7 +22,9 @@ const GenericPredictor = ({ config }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await readExcelFile(config.datasetPath);
+        // Construct dynamic path based on predictor name and year
+        const datasetPath = `/data/${config.id}/${year}.xlsx`;
+        const data = await readExcelFile(datasetPath);
         setRawData(data);
         
         // Setup Primary Filter Config (Stage 1)
@@ -34,13 +37,15 @@ const GenericPredictor = ({ config }) => {
         setPrimaryFilterConfig(pConfig);
         setLoading(false);
       } catch (error) {
-        console.error(`Error loading ${config.title} data:`, error);
+        console.error(`Error loading ${config.title} data for year ${year}:`, error);
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, [config]);
+    if (year && config.id) {
+      fetchData();
+    }
+  }, [config, year]);
 
   // Handle Prediction (Stage 1 Submit)
   const handlePredict = () => {
@@ -62,9 +67,11 @@ const GenericPredictor = ({ config }) => {
             results = results.filter(item => parseInt(item[key]) >= numValue);
           }
         } else {
-          results = results.filter(item => 
-            String(item[key]).toLowerCase() === String(value).toLowerCase()
-          );
+          results = results.filter(item => {
+            const itemVal = item[key] ? item[key].toString().trim().toLowerCase() : '';
+            const filterVal = value ? value.toString().trim().toLowerCase() : '';
+            return itemVal === filterVal;
+          });
         }
       });
     }
@@ -73,6 +80,11 @@ const GenericPredictor = ({ config }) => {
     setFinalResults(results);
     setIsPredicted(true);
     setSecondaryFilters({}); // Reset secondary filters when new prediction is made
+
+    // Scroll to results after a short delay to allow rendering
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   // Dynamic Secondary Filter Config (Stage 2)
@@ -89,9 +101,10 @@ const GenericPredictor = ({ config }) => {
       let intermediateData = [...predictedResults];
       Object.entries(otherFilters).forEach(([key, values]) => {
         if (values && values.length > 0) {
-          intermediateData = intermediateData.filter(item => 
-            values.includes(String(item[key]))
-          );
+          intermediateData = intermediateData.filter(item => {
+            const itemVal = item[key] ? item[key].toString().trim() : '';
+            return values.includes(itemVal);
+          });
         }
       });
 
@@ -114,9 +127,10 @@ const GenericPredictor = ({ config }) => {
     // Apply Multi-select Secondary Filters
     Object.entries(secondaryFilters).forEach(([key, values]) => {
       if (values && values.length > 0) {
-        results = results.filter(item => 
-          values.includes(String(item[key]))
-        );
+        results = results.filter(item => {
+          const itemVal = item[key] ? item[key].toString().trim() : '';
+          return values.includes(itemVal);
+        });
       }
     });
 
@@ -157,16 +171,16 @@ const GenericPredictor = ({ config }) => {
 
   const handleDownload = () => {
     // Extract details for the dynamic filename
-    const predictorName = config.title.split(' ').slice(0, 2).join('_'); // e.g., "JoSAA_2025"
+    const predictorName = `${config.id.toUpperCase()}_${year}`;
     const candidateName = (primaryFilters.Username || 'Candidate').replace(/\s+/g, '_');
-    const jeeRank = primaryFilters['Closing Rank'] || '0';
+    const jeeRank = primaryFilters['Closing Rank'] || primaryFilters['CRL Rank'] || '0';
     const seatType = (primaryFilters['Seat Type'] || primaryFilters['Category'] || 'General').replace(/\s+/g, '_');
-    const state = (primaryFilters['Institute State'] || primaryFilters['Home State'] || primaryFilters['Quota'] || 'AI').replace(/\s+/g, '_');
+    const state = (primaryFilters['Institute State'] || primaryFilters['Home State'] || primaryFilters['Quota'] || primaryFilters['Homestate'] || 'AI').replace(/\s+/g, '_');
 
     const fileName = `CareerSync_${predictorName}_${candidateName}_${jeeRank}_${seatType}_${state}.pdf`;
 
     generatePDF(
-      config.title,
+      `${config.title} (${year})`,
       config.columns,
       finalResults,
       fileName,
@@ -174,33 +188,25 @@ const GenericPredictor = ({ config }) => {
     );
   };
 
-  if (loading) return <div className="loading">Loading {config.title} Data...</div>;
+  if (loading) return <div className="loading">Loading {config.title} {year} Data...</div>;
 
   return (
     <div className="predictor-module">
       <div className="module-header">
-        <h2>{config.title}</h2>
-        {!isPredicted ? (
-          <p>Fill in your details to predict eligible colleges.</p>
-        ) : (
-          <p>Based on your details, here are the predicted colleges. You can further filter the results.</p>
-        )}
+        <h2>{config.title} - {year} Edition</h2>
+        <p>Fill in your details to predict eligible colleges. You can refine the results below after prediction.</p>
       </div>
 
-      {!isPredicted ? (
-        <InitialForm 
-          filters={primaryFilters}
-          filterConfig={primaryFilterConfig}
-          onFilterChange={handlePrimaryFilterChange}
-          onSubmit={handlePredict}
-          onReset={handleReset}
-        />
-      ) : (
-        <div className="results-stage">
-          <div className="results-actions-top">
-            <button className="back-btn" onClick={() => setIsPredicted(false)}>← Edit Details</button>
-          </div>
-          
+      <InitialForm 
+        filters={primaryFilters}
+        filterConfig={primaryFilterConfig}
+        onFilterChange={handlePrimaryFilterChange}
+        onSubmit={handlePredict}
+        onReset={handleReset}
+      />
+
+      {isPredicted && (
+        <div className="results-stage" ref={resultsRef}>
           <FilterSection 
             filters={secondaryFilters}
             filterConfig={secondaryFilterConfig}

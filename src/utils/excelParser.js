@@ -47,6 +47,9 @@ export const filterData = (data, filters) => {
  * @returns {Array} - Unique values sorted
  */
 export const getUniqueValues = (data, column) => {
-  const values = [...new Set(data.map(item => item[column]))];
-  return values.filter(Boolean).sort();
+  const values = [...new Set(data.map(item => {
+    const val = item[column];
+    return val ? val.toString().trim() : val;
+  }))];
+  return values.filter(v => v !== null && v !== undefined && v !== '').sort();
 };

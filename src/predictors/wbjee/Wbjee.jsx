@@ -3,8 +3,8 @@ import GenericPredictor from '../shared/GenericPredictor';
 import { WBJEE_CONFIG } from './config';
 import './Wbjee.css';
 
-const Wbjee = () => {
-  return <GenericPredictor config={WBJEE_CONFIG} />;
+const Wbjee = ({ year }) => {
+  return <GenericPredictor config={WBJEE_CONFIG} year={year} />;
 };
 
 export default Wbjee;

@@ -39,6 +39,36 @@ const predictorCards = [
     title: 'HBTU Predictor',
     description: 'Harcourt Butler Technical University admission predictor.',
     color: '#1abc9c',
+  },
+  {
+    id: 'ipu',
+    title: 'IPU Predictor',
+    description: 'Counseling for Guru Gobind Singh Indraprastha University, Delhi.',
+    color: '#34495e',
+  },
+  {
+    id: 'jac-chandigarh',
+    title: 'JAC Chandigarh Predictor',
+    description: 'Counseling for engineering colleges in Chandigarh.',
+    color: '#f1c40f',
+  },
+  {
+    id: 'mpdte',
+    title: 'MPDTE Predictor',
+    description: 'Counseling for engineering colleges in Madhya Pradesh.',
+    color: '#d35400',
+  },
+  {
+    id: 'ptu',
+    title: 'PTU Predictor',
+    description: 'Counseling for I.K. Gujral Punjab Technical University.',
+    color: '#2980b9',
+  },
+  {
+    id: 'reap',
+    title: 'REAP Predictor',
+    description: 'Rajasthan Engineering Admission Process predictor.',
+    color: '#16a085',
   }
 ];
 
@@ -46,8 +76,8 @@ const Home = () => {
   return (
     <div className="home-container">
       <header className="hero-section">
-        <h1>Predictor Hub 2026</h1>
-        <p>Unified platform for all engineering college counseling predictions using official 2026 datasets.</p>
+        <h1>Predictor Hub</h1>
+        <p>Unified platform for all engineering college counseling predictions using official yearly datasets.</p>
       </header>
 
       <div className="predictor-grid">
@@ -55,7 +85,7 @@ const Home = () => {
           <div key={card.id} className="predictor-card" style={{ '--card-color': card.color }}>
             <h3>{card.title}</h3>
             <p>{card.description}</p>
-            <Link to={`/predictor/${card.id}`} className="card-link">
+            <Link to={`/select-year/${card.id}`} className="card-link">
               Open Predictor <FaArrowRight />
             </Link>
           </div>

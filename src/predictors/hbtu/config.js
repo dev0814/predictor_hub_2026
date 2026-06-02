@@ -1,6 +1,6 @@
 export const HBTU_CONFIG = {
-  title: 'HBTU 2025 College Predictor',
-  datasetPath: '/data/hbtu/2025.xlsx',
+  id: 'hbtu',
+  title: 'HBTU College Predictor',
   primaryFilters: [
     { key: 'Username', label: 'Your Name', type: 'text', required: true },
     { key: 'Closing Rank', label: 'Your JEE Main Rank', type: 'number', required: true },

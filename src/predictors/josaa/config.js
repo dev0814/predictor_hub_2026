@@ -1,6 +1,6 @@
 export const JOSAA_CONFIG = {
-  title: 'JoSAA 2025 College Predictor',
-  datasetPath: '/data/josaa/2025.xlsx',
+  id: 'josaa',
+  title: 'JoSAA College Predictor',
   primaryFilters: [
     { key: 'Username', label: 'Your Name', type: 'text', required: true },
     { key: 'Closing Rank', label: 'Your JEE Advanced Rank', type: 'number', required: true },
@@ -25,25 +25,25 @@ export const JOSAA_CONFIG = {
   ],
   predictionLogic: (data, filters) => {
     const inputRank = parseInt(filters['Closing Rank']);
-    const category = filters['Seat Type'];
-    const gender = filters['Gender'];
+    const category = filters['Seat Type'] ? filters['Seat Type'].toString().trim().toLowerCase() : '';
+    const gender = filters['Gender'] ? filters['Gender'].toString().trim().toLowerCase() : '';
     const round = filters['Round'];
-    const homeState = filters['Institute State']?.toLowerCase();
+    const homeState = filters['Institute State'] ? filters['Institute State'].toString().trim().toLowerCase() : '';
 
     return data.filter(row => {
       if (round && row['Round'] !== round) return false;
 
       const closingRank = parseInt(row['Closing Rank']);
-      const seat = row['Seat Type'];
-      const genderRow = row['Gender'];
-      const instState = row['Institute State']?.toLowerCase();
-      const quota = row['Quota'];
+      const rowSeat = row['Seat Type'] ? row['Seat Type'].toString().trim().toLowerCase() : '';
+      const rowGender = row['Gender'] ? row['Gender'].toString().trim().toLowerCase() : '';
+      const rowInstState = row['Institute State'] ? row['Institute State'].toString().trim().toLowerCase() : '';
+      const quota = row['Quota'] ? row['Quota'].toString().trim().toUpperCase() : '';
 
       const validRank = !isNaN(closingRank) && inputRank <= closingRank;
-      const validCategory = seat === category;
-      const validGender = genderRow === gender;
+      const validCategory = rowSeat === category;
+      const validGender = rowGender === gender;
       
-      const isHomeState = quota === 'HS' && instState === homeState;
+      const isHomeState = quota === 'HS' && rowInstState === homeState;
       const isOtherState = quota === 'OS';
       const isAllIndia = quota === 'AI';
 

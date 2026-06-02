@@ -1,39 +1,31 @@
-export const AKTU_CONFIG = {
-  id: 'aktu',
-  title: 'AKTU College Predictor',
+export const IPU_CONFIG = {
+  id: 'ipu',
+  title: 'IPU College Predictor',
   primaryFilters: [
     { key: 'Username', label: 'Your Name', type: 'text', required: true },
-    { key: 'Closing Rank', label: 'Your JEE Main Rank', type: 'number', required: true },
-    { key: 'Round', label: 'Round', type: 'select', required: true },
+    { key: 'Closing Rank', label: 'Your JEE Rank', type: 'number', required: true },
     { key: 'Category', label: 'Category', type: 'select', required: true },
     { key: 'Quota', label: 'Quota', type: 'select', required: true },
   ],
   secondaryFilters: [
     { key: 'Program', label: 'Program', type: 'select' },
     { key: 'Institute', label: 'College', type: 'select' },
+    { key: 'abbreviations', label: 'Abbreviation', type: 'select' },
   ],
   columns: [
     { key: 'Institute', label: 'College' },
     { key: 'Program', label: 'Program' },
     { key: 'Quota', label: 'Quota' },
     { key: 'Category', label: 'Category' },
-    { key: 'Round', label: 'Round' },
+    { key: 'abbreviations', label: 'Abbrev.' },
     { key: 'Closing Rank', label: 'Closing Rank' },
-    { key: 'Total Fees (INR)', label: 'Fees' },
-    { key: 'Hostel Fees (INR)', label: 'Hostel' },
-    { key: 'Average Salary (LPA)', label: 'Avg Package' },
-    { key: 'Highest Salary (LPA)', label: 'High Package' },
   ],
   predictionLogic: (data, filters) => {
     const inputRank = parseInt(filters['Closing Rank']);
-    const round = filters['Round'] ? filters['Round'].toString().trim().toLowerCase() : '';
     const category = filters['Category'] ? filters['Category'].toString().trim().toLowerCase() : '';
     const quota = filters['Quota'] ? filters['Quota'].toString().trim().toLowerCase() : '';
 
     return data.filter(row => {
-      const rowRound = row['Round'] ? row['Round'].toString().trim().toLowerCase() : '';
-      if (round && rowRound !== round) return false;
-
       const closing = parseInt(row['Closing Rank']);
       const validRank = !isNaN(closing) && inputRank <= closing;
       
