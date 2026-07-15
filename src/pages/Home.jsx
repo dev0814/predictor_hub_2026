@@ -5,6 +5,12 @@ import './Home.css';
 
 const predictorCards = [
   {
+    id: 'neet',
+    title: 'NEET UG Predictor',
+    description: 'Predict MBBS/BDS colleges based on NEET UG ranks for medical and dental admissions.',
+    color: '#8e44ad',
+  },
+  {
     id: 'josaa',
     title: 'JoSAA Predictor',
     description: 'Predict IIT, NIT, IIIT, and GFTI colleges based on JEE Advanced ranks.',

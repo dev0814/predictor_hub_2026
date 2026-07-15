@@ -4,6 +4,7 @@ import './PredictorPage.css';
 
 // Pre-define the lazy components to help Vite's static analysis
 const predictors = {
+  'neet': lazy(() => import('../predictors/neet/Neet.jsx')),
   'josaa': lazy(() => import('../predictors/josaa/Josaa.jsx')),
   'csab': lazy(() => import('../predictors/csab/Csab.jsx')),
   'aktu': lazy(() => import('../predictors/aktu/Aktu.jsx')),
