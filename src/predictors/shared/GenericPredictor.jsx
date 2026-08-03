@@ -118,6 +118,32 @@ const GenericPredictor = ({ config, year }) => {
     });
   }, [config.secondaryFilters, predictedResults, secondaryFilters, isPredicted]);
 
+  useEffect(() => {
+    if (!isPredicted) return;
+    if (secondaryFilterConfig.length === 0) return;
+
+    const optionsByKey = secondaryFilterConfig.reduce((acc, cfg) => {
+      acc[cfg.key] = cfg.options || [];
+      return acc;
+    }, {});
+
+    let changed = false;
+    const next = { ...secondaryFilters };
+
+    Object.entries(next).forEach(([key, values]) => {
+      if (!Array.isArray(values) || values.length === 0) return;
+      if (!optionsByKey[key]) return;
+
+      const pruned = values.filter(v => optionsByKey[key].includes(v));
+      if (pruned.length !== values.length) {
+        next[key] = pruned;
+        changed = true;
+      }
+    });
+
+    if (changed) setSecondaryFilters(next);
+  }, [isPredicted, secondaryFilterConfig, secondaryFilters]);
+
   // Calculate Final Results (Stage 2)
   useEffect(() => {
     if (!isPredicted) return;

@@ -35,21 +35,22 @@
 }
 
 .filter-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .filter-item {
   display: flex;
   flex-direction: column;
+  gap: 6px;
 }
 
 .filter-item label {
   font-size: 0.85rem;
   font-weight: 600;
   color: #666;
-  margin-bottom: 6px;
+  margin-bottom: 0;
 }
 
 .filter-item select, 
@@ -61,7 +62,8 @@
 }
 
 .multi-select {
-  min-width: 200px;
+  width: 100%;
+  min-width: 0;
 }
 
 .filter-item select:focus, 
@@ -69,8 +71,19 @@
   border-color: #3498db;
 }
 
-@media (max-width: 480px) {
-  .filter-grid {
-    grid-template-columns: 1fr;
+@media (min-width: 640px) {
+  .filter-item {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .filter-item label {
+    width: 180px;
+    flex: 0 0 180px;
+  }
+
+  .multi-select {
+    flex: 1 1 auto;
   }
 }
