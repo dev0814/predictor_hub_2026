@@ -4,11 +4,13 @@ const processNeetData = (rawData) => {
   const cutoffMap = new Map();
 
   rawData.forEach(row => {
+    const type = row['Type'] ?? row['type'] ?? '';
     const key = [
       row['Allotted Institute'],
       row['Course'],
       row['Allotted Quota'],
       row['Alloted Category'],
+      type,
     ].join('|||');
 
     if (!cutoffMap.has(key)) {
@@ -17,6 +19,7 @@ const processNeetData = (rawData) => {
         'Course': row['Course'],
         'Allotted Quota': row['Allotted Quota'],
         'Alloted Category': row['Alloted Category'],
+        Type: type,
         'Opening Rank': row['Rank'],
         'Closing Rank': row['Rank']
       });
@@ -46,11 +49,12 @@ export const NEET_CONFIG = {
     { key: 'Allotted Institute', label: 'Institute', type: 'select' },
     { key: 'Course', label: 'Course', type: 'select' },
     { key: 'Allotted Quota', label: 'Allotted Quota', type: 'select' },
+    { key: 'Type', label: 'Type', type: 'select' },
   ],
   columns: [
     { key: 'Allotted Institute', label: 'Institute' },
     { key: 'Course', label: 'Course' },
-    // { key: 'Allotted Quota', label: 'Quota' },
+    { key: 'Allotted Quota', label: 'Quota' },
     { key: 'Alloted Category', label: 'Category' },
     { key: 'Opening Rank', label: 'Opening Rank' },
     { key: 'Closing Rank', label: 'Closing Rank' },
