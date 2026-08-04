@@ -4,6 +4,8 @@ import { generatePDF } from '../../utils/pdfGenerator';
 import InitialForm from '../../components/InitialForm';
 import FilterSection from '../../components/FilterSection';
 import ResultTable from '../../components/ResultTable';
+import ColumnSelector from '../../components/ColumnSelector';
+import ColumnSelectModal from '../../components/ColumnSelectModal';
 import './GenericPredictor.css';
 
 const GenericPredictor = ({ config, year }) => {
@@ -17,6 +19,9 @@ const GenericPredictor = ({ config, year }) => {
   const [isPredicted, setIsPredicted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: 'Closing Rank', direction: 'asc' });
+  const [tableColumnKeys, setTableColumnKeys] = useState([]);
+  const [pdfColumnKeys, setPdfColumnKeys] = useState([]);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
 
   // Load Initial Data
   useEffect(() => {
@@ -46,6 +51,35 @@ const GenericPredictor = ({ config, year }) => {
       fetchData();
     }
   }, [config, year]);
+
+  useEffect(() => {
+    const keys = (config.columns || []).map(c => c.key);
+    setTableColumnKeys(keys);
+    setPdfColumnKeys(keys);
+  }, [config]);
+
+  const tableColumns = useMemo(() => {
+    const cols = config.columns || [];
+    if (!tableColumnKeys || tableColumnKeys.length === 0) return [];
+    return cols.filter(c => tableColumnKeys.includes(c.key));
+  }, [config.columns, tableColumnKeys]);
+
+  useEffect(() => {
+    if (!isPredicted) return;
+    if (tableColumns.length === 0) {
+      if (sortConfig.key !== null) setSortConfig(prev => ({ ...prev, key: null }));
+      return;
+    }
+
+    if (!sortConfig.key) {
+      setSortConfig(prev => ({ ...prev, key: tableColumns[0].key }));
+      return;
+    }
+
+    if (!tableColumns.some(c => c.key === sortConfig.key)) {
+      setSortConfig(prev => ({ ...prev, key: tableColumns[0].key }));
+    }
+  }, [isPredicted, tableColumns, sortConfig.key]);
 
   // Handle Prediction (Stage 1 Submit)
   const handlePredict = () => {
@@ -163,9 +197,20 @@ const GenericPredictor = ({ config, year }) => {
     // Apply Sorting
     if (sortConfig.key) {
       results.sort((a, b) => {
-        const valA = parseInt(a[sortConfig.key]) || 0;
-        const valB = parseInt(b[sortConfig.key]) || 0;
-        return sortConfig.direction === 'asc' ? valA - valB : valB - valA;
+        const rawA = a[sortConfig.key];
+        const rawB = b[sortConfig.key];
+        const numA = Number(rawA);
+        const numB = Number(rawB);
+        const bothNumeric = Number.isFinite(numA) && Number.isFinite(numB);
+
+        if (bothNumeric) {
+          return sortConfig.direction === 'asc' ? numA - numB : numB - numA;
+        }
+
+        const strA = String(rawA ?? '').trim();
+        const strB = String(rawB ?? '').trim();
+        const cmp = strA.localeCompare(strB, undefined, { numeric: true, sensitivity: 'base' });
+        return sortConfig.direction === 'asc' ? cmp : -cmp;
       });
     }
 
@@ -195,7 +240,15 @@ const GenericPredictor = ({ config, year }) => {
     }));
   };
 
-  const handleDownload = () => {
+  const handleDownloadClick = () => {
+    const seed = tableColumnKeys && tableColumnKeys.length > 0 ? tableColumnKeys : (config.columns || []).map(c => c.key);
+    setPdfColumnKeys(seed);
+    setIsPdfModalOpen(true);
+  };
+
+  const handleConfirmDownload = () => {
+    if (!pdfColumnKeys || pdfColumnKeys.length === 0) return;
+
     // Extract details for the dynamic filename
     const predictorName = `${config.id.toUpperCase()}_${year}`;
     const candidateName = (primaryFilters.Username || 'Candidate').replace(/\s+/g, '_');
@@ -205,13 +258,16 @@ const GenericPredictor = ({ config, year }) => {
 
     const fileName = `CareerSync_${predictorName}_${candidateName}_${jeeRank}_${seatType}_${state}.pdf`;
 
+    const selectedColumns = (config.columns || []).filter(c => pdfColumnKeys.includes(c.key));
+
     generatePDF(
       `${config.title} (${year})`,
-      config.columns,
+      selectedColumns,
       finalResults,
       fileName,
       primaryFilters
     );
+    setIsPdfModalOpen(false);
   };
 
   if (loading) return <div className="loading">Loading {config.title} {year} Data...</div>;
@@ -240,15 +296,32 @@ const GenericPredictor = ({ config, year }) => {
             onReset={() => setSecondaryFilters({})}
           />
 
+          <ColumnSelector
+            columns={config.columns || []}
+            selectedKeys={tableColumnKeys}
+            onChange={setTableColumnKeys}
+            title="Select Columns"
+          />
+
           <ResultTable 
             data={finalResults}
-            columns={config.columns}
-            onDownload={handleDownload}
+            columns={tableColumns}
+            onDownload={handleDownloadClick}
             onSort={toggleSort}
             sortConfig={sortConfig}
           />
         </div>
       )}
+
+      <ColumnSelectModal
+        open={isPdfModalOpen}
+        title="Select PDF Columns"
+        columns={config.columns || []}
+        selectedKeys={pdfColumnKeys}
+        onChange={setPdfColumnKeys}
+        onCancel={() => setIsPdfModalOpen(false)}
+        onConfirm={handleConfirmDownload}
+      />
     </div>
   );
 };

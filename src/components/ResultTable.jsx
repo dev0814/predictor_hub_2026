@@ -11,6 +11,14 @@ const ResultTable = ({ data, columns, onDownload, onSort, sortConfig }) => {
     );
   }
 
+  if (!columns || columns.length === 0) {
+    return (
+      <div className="no-results">
+        <p>Please select at least one column to display results.</p>
+      </div>
+    );
+  }
+
   const getSortIcon = (columnKey) => {
     if (sortConfig.key !== columnKey) return <FaSort className="sort-icon" />;
     return sortConfig.direction === 'asc' ? <FaSortUp className="sort-icon active" /> : <FaSortDown className="sort-icon active" />;
