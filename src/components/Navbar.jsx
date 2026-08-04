@@ -18,11 +18,12 @@ const Navbar = () => {
           <li className="nav-item dropdown">
             <span className="nav-links">Predictors</span>
             <div className="dropdown-content">
+              <Link to="select-year/neet">NEET</Link>
               <Link to="select-year/josaa">JoSAA</Link>
               <Link to="select-year/csab">CSAB</Link>
               <Link to="select-year/aktu">AKTU</Link>
               <Link to="select-year/jac-delhi">JAC Delhi</Link>
-              <Link to="select-year/hubtu">HBTU</Link>
+              <Link to="select-year/hbtu">HBTU</Link>
               <Link to="select-year/wbjee">WBJEE</Link>
               <Link to="select-year/jac-chandigarh">JAC Chandigarh</Link>
               <Link to="select-year/ipu">IPU</Link>
